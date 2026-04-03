@@ -1,0 +1,1161 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Solo Rising</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#05050f;--bg2:#0a0a1a;--bg3:#0f0f22;
+  --panel:#12122a;--panel2:#1a1a35;--panel3:#1e1e40;
+  --border:#2a2a5a;--border2:#3a3a7a;
+  --gold:#c8a94a;--gold2:#e8c96a;
+  --blue:#4a7aff;--blue2:#6a9aff;
+  --purple:#8a4aff;--purple2:#aa6aff;
+  --red:#ff4a4a;--red2:#ff6a6a;
+  --green:#4aff8a;--green2:#6affaa;
+  --cyan:#4affff;--orange:#ff9a4a;
+  --text:#e0e0f8;--text2:#a0a0c8;--text3:#606080;
+}
+body{background:var(--bg);color:var(--text);font-family:'Rajdhani',sans-serif;min-height:100vh;overflow-x:hidden;}
+.app{max-width:480px;margin:0 auto;padding:0 0 80px;}
+
+/* HEADER */
+.header{text-align:center;padding:24px 20px 16px;position:relative;background:linear-gradient(180deg,rgba(74,122,255,0.06) 0%,transparent 100%);}
+.system-tag{font-family:'Cinzel',serif;font-size:10px;letter-spacing:4px;color:var(--blue);margin-bottom:6px;opacity:.7;}
+.app-title{font-family:'Cinzel',serif;font-size:26px;font-weight:900;background:linear-gradient(135deg,var(--gold),var(--gold2),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 14px rgba(200,169,74,.45));letter-spacing:3px;}
+.divider{height:1px;background:linear-gradient(90deg,transparent,var(--border2),var(--gold),var(--border2),transparent);margin:14px 20px;opacity:.6;}
+
+/* PROFILE */
+.profile{display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center;background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin:0 16px 16px;position:relative;overflow:hidden;}
+.profile::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(74,122,255,.05) 0%,transparent 70%);pointer-events:none;}
+.avatar-wrap{position:relative;}
+.avatar{width:66px;height:66px;border-radius:50%;border:2px solid var(--blue);background:linear-gradient(135deg,var(--panel2),var(--bg3));display:flex;align-items:center;justify-content:center;font-size:28px;cursor:pointer;position:relative;overflow:hidden;transition:.2s;}
+.avatar:hover{border-color:var(--gold);}
+.avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
+.avatar-ring{position:absolute;inset:-5px;border-radius:50%;border:1.5px solid rgba(74,122,255,.25);animation:spin 5s linear infinite;}
+.avatar-dot{position:absolute;width:7px;height:7px;background:var(--gold);border-radius:50%;top:-5px;left:50%;transform:translateX(-50%);box-shadow:0 0 6px var(--gold);}
+@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+.player-name-display{font-family:'Cinzel',serif;font-size:18px;font-weight:700;color:var(--text);margin-bottom:3px;cursor:pointer;display:flex;align-items:center;gap:6px;}
+.edit-icon{font-size:11px;opacity:.4;transition:.2s;}
+.player-name-display:hover .edit-icon{opacity:1;}
+.player-rank{display:inline-block;font-size:10px;font-weight:700;letter-spacing:2px;padding:2px 8px;border-radius:3px;margin-bottom:7px;}
+.xp-row{display:flex;justify-content:space-between;font-size:10px;color:var(--text2);margin-bottom:3px;}
+.xp-bar{height:7px;background:var(--bg3);border-radius:4px;overflow:hidden;border:1px solid var(--border);}
+.xp-fill{height:100%;background:linear-gradient(90deg,var(--blue),var(--blue2));border-radius:4px;transition:width .8s cubic-bezier(.4,0,.2,1);position:relative;}
+.xp-fill::after{content:'';position:absolute;top:0;right:0;width:18px;height:100%;background:rgba(255,255,255,.25);filter:blur(3px);animation:shimmer 2s ease-in-out infinite;}
+@keyframes shimmer{0%,100%{opacity:0}50%{opacity:1}}
+.level-badge{background:var(--panel2);border:1px solid var(--gold);border-radius:8px;padding:8px 14px;text-align:center;box-shadow:0 0 16px rgba(200,169,74,.2);}
+.level-num{font-family:'Cinzel',serif;font-size:28px;font-weight:900;color:var(--gold);line-height:1;}
+.level-label{font-size:9px;letter-spacing:2px;color:var(--text2);text-transform:uppercase;}
+
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;padding:0 16px;margin-bottom:16px;}
+.stat-card{background:var(--panel);border:1px solid var(--border);border-radius:6px;padding:8px 4px;text-align:center;cursor:pointer;position:relative;overflow:hidden;transition:.2s;}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--accent,var(--blue));}
+.stat-card:hover{border-color:var(--accent,var(--blue));transform:translateY(-1px);}
+.stat-lbl{font-size:9px;letter-spacing:1px;color:var(--text2);text-transform:uppercase;margin-bottom:3px;}
+.stat-val{font-family:'Cinzel',serif;font-size:19px;font-weight:700;line-height:1;}
+.stat-nm{font-size:8px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-top:2px;}
+
+/* TABS */
+.tabs{display:flex;gap:3px;background:var(--bg2);border-radius:8px;padding:4px;margin:0 16px 16px;}
+.tab{flex:1;text-align:center;padding:8px 4px;border-radius:6px;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:.2s;color:var(--text2);border:1px solid transparent;}
+.tab.active{background:var(--panel2);border-color:var(--border2);color:var(--text);}
+.tab-content{display:none;padding:0 16px;}
+.tab-content.active{display:block;}
+
+/* SECTION HEADER */
+.sec-head{display:flex;align-items:center;gap:10px;margin:0 0 10px;}
+.sec-title{font-family:'Cinzel',serif;font-size:13px;font-weight:700;letter-spacing:2px;text-transform:uppercase;}
+.sec-badge{font-size:10px;padding:2px 8px;border-radius:3px;font-weight:600;letter-spacing:1px;}
+.badge-daily{background:rgba(74,122,255,.15);color:var(--blue2);border:1px solid rgba(74,122,255,.3);}
+.badge-special{background:rgba(138,74,255,.15);color:var(--purple2);border:1px solid rgba(138,74,255,.3);}
+.badge-gold{background:rgba(200,169,74,.15);color:var(--gold);border:1px solid rgba(200,169,74,.3);}
+
+/* QUEST */
+.quest-list{display:flex;flex-direction:column;gap:8px;margin-bottom:12px;}
+.quest-item{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:13px 14px;display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;position:relative;overflow:hidden;transition:.2s;}
+.quest-item::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--qc,var(--blue));border-radius:3px 0 0 3px;}
+.quest-item.done{opacity:.45;}
+.quest-item.done .quest-name{text-decoration:line-through;}
+.quest-check{width:22px;height:22px;border-radius:4px;border:2px solid var(--qc,var(--blue));display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:12px;transition:.2s;}
+.quest-item.done .quest-check{background:var(--qc,var(--blue));}
+.quest-name{font-weight:700;font-size:14px;color:var(--text);margin-bottom:2px;}
+.quest-desc{font-size:11px;color:var(--text2);}
+.quest-actions{display:flex;flex-direction:column;gap:4px;align-items:flex-end;margin-top:8px;}
+.quest-action-btn{background:var(--qc,var(--blue));border:none;border-radius:5px;color:#fff;font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:700;padding:5px 10px;cursor:pointer;letter-spacing:.5px;display:flex;align-items:center;gap:4px;transition:.2s;white-space:nowrap;}
+.quest-action-btn:hover{filter:brightness(1.2);}
+.quest-action-btn.secondary{background:transparent;border:1px solid var(--qc,var(--blue));color:var(--qc,var(--blue));}
+.quest-xp{font-family:'Cinzel',serif;font-size:13px;font-weight:700;color:var(--gold);white-space:nowrap;}
+.quest-stat-lbl{font-size:10px;color:var(--text2);letter-spacing:1px;white-space:nowrap;}
+.prog-row{display:flex;align-items:center;gap:8px;margin-top:7px;}
+.prog-bar{flex:1;height:4px;background:var(--bg3);border-radius:2px;overflow:hidden;}
+.prog-fill{height:100%;background:var(--qc,var(--blue));border-radius:2px;transition:width .3s;}
+.prog-txt{font-size:10px;color:var(--text2);min-width:36px;text-align:right;}
+.quest-bottom{grid-column:2/-1;padding-top:4px;}
+
+/* PROOF MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:200;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:.3s;}
+.modal-overlay.open{opacity:1;pointer-events:all;}
+.modal{background:var(--panel);border:1px solid var(--border2);border-radius:16px 16px 0 0;width:100%;max-width:480px;padding:24px 20px 36px;transform:translateY(100%);transition:.35s cubic-bezier(.4,0,.2,1);}
+.modal-overlay.open .modal{transform:translateY(0);}
+.modal-title{font-family:'Cinzel',serif;font-size:16px;font-weight:700;color:var(--gold);margin-bottom:6px;display:flex;align-items:center;gap:10px;}
+.modal-desc{font-size:13px;color:var(--text2);margin-bottom:18px;line-height:1.5;}
+.modal-close{margin-left:auto;background:transparent;border:1px solid var(--border2);border-radius:6px;color:var(--text2);padding:4px 10px;font-family:'Rajdhani',sans-serif;font-size:12px;cursor:pointer;}
+
+/* CAMERA */
+.cam-area{border-radius:10px;overflow:hidden;background:#000;position:relative;margin-bottom:14px;aspect-ratio:4/3;}
+#camera-feed{width:100%;height:100%;object-fit:cover;display:block;}
+.cam-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:12px;background:linear-gradient(transparent 50%,rgba(0,0,0,.6) 100%);}
+.cam-status{font-size:11px;color:rgba(255,255,255,.7);letter-spacing:1px;text-transform:uppercase;}
+#cam-canvas{display:none;}
+.photo-preview{width:100%;border-radius:10px;margin-bottom:14px;display:none;}
+.proof-actions{display:flex;gap:8px;}
+.btn-primary{flex:1;background:var(--blue);border:none;border-radius:8px;color:#fff;font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;padding:12px;cursor:pointer;letter-spacing:1px;transition:.2s;}
+.btn-primary:hover{background:var(--blue2);}
+.btn-primary.green{background:linear-gradient(135deg,#1aaa5a,#2acc6a);}
+.btn-primary.gold{background:linear-gradient(135deg,#a08020,var(--gold));}
+.btn-secondary{flex:1;background:transparent;border:1px solid var(--border2);border-radius:8px;color:var(--text2);font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;padding:12px;cursor:pointer;letter-spacing:1px;transition:.2s;}
+.btn-secondary:hover{border-color:var(--blue);color:var(--blue);}
+
+/* MAP */
+.map-area{border-radius:10px;overflow:hidden;background:var(--bg3);border:1px solid var(--border);margin-bottom:14px;height:220px;position:relative;display:flex;align-items:center;justify-content:center;}
+.map-placeholder{text-align:center;color:var(--text2);}
+.map-placeholder .icon{font-size:32px;margin-bottom:8px;}
+.map-info{background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:12px 14px;margin-bottom:14px;display:flex;gap:16px;align-items:center;}
+.map-stat{flex:1;text-align:center;}
+.map-stat-val{font-family:'Cinzel',serif;font-size:22px;font-weight:700;color:var(--green);}
+.map-stat-lbl{font-size:10px;color:var(--text2);letter-spacing:1px;text-transform:uppercase;margin-top:2px;}
+.map-divider{width:1px;height:40px;background:var(--border);}
+#leaflet-map{width:100%;height:100%;}
+.run-active-bar{background:linear-gradient(135deg,rgba(74,255,138,.1),rgba(74,255,138,.05));border:1px solid rgba(74,255,138,.3);border-radius:8px;padding:10px 14px;margin-bottom:12px;display:flex;align-items:center;gap:10px;}
+.run-pulse{width:8px;height:8px;background:var(--green);border-radius:50%;animation:pulse 1s ease-in-out infinite;}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(74,255,138,.4)}50%{box-shadow:0 0 0 8px rgba(74,255,138,0)}}
+.run-active-txt{font-size:12px;color:var(--green);font-weight:600;letter-spacing:1px;}
+
+/* VALORANT */
+.val-screens{display:flex;flex-direction:column;gap:10px;margin-bottom:14px;}
+.val-slot{border:2px dashed var(--border2);border-radius:10px;padding:14px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:.2s;position:relative;overflow:hidden;}
+.val-slot:hover{border-color:var(--purple2);}
+.val-slot.filled{border-style:solid;border-color:var(--purple);}
+.val-slot-num{font-family:'Cinzel',serif;font-size:20px;font-weight:700;color:var(--text3);width:28px;flex-shrink:0;}
+.val-slot.filled .val-slot-num{color:var(--purple2);}
+.val-slot-info{flex:1;}
+.val-slot-title{font-size:13px;font-weight:600;color:var(--text2);}
+.val-slot.filled .val-slot-title{color:var(--text);}
+.val-slot-sub{font-size:11px;color:var(--text3);margin-top:2px;}
+.val-slot-check{font-size:20px;}
+.val-img-preview{width:100%;height:80px;object-fit:cover;border-radius:7px;margin-top:8px;display:none;}
+.val-slot.filled .val-img-preview{display:block;}
+.val-file-input{position:absolute;inset:0;opacity:0;cursor:pointer;}
+.val-progress{background:var(--panel2);border-radius:8px;padding:12px 14px;margin-bottom:14px;}
+.val-prog-label{display:flex;justify-content:space-between;font-size:12px;color:var(--text2);margin-bottom:6px;}
+.val-prog-bar{height:6px;background:var(--bg3);border-radius:3px;overflow:hidden;}
+.val-prog-fill{height:100%;background:linear-gradient(90deg,var(--purple),var(--purple2));border-radius:3px;transition:width .4s;}
+
+/* ADD QUEST PANEL */
+.add-panel{background:var(--panel);border:1px dashed var(--border2);border-radius:10px;padding:16px;margin-top:8px;}
+.add-panel-title{font-family:'Cinzel',serif;font-size:12px;font-weight:700;color:var(--text2);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;}
+.add-row{display:flex;flex-direction:column;gap:8px;margin-bottom:10px;}
+.add-input{background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:10px 12px;color:var(--text);font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:500;outline:none;transition:.2s;width:100%;}
+.add-input:focus{border-color:var(--blue);}
+.add-input::placeholder{color:var(--text3);}
+.add-row-inline{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.add-select{background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:10px 12px;color:var(--text);font-family:'Rajdhani',sans-serif;font-size:13px;outline:none;cursor:pointer;}
+.add-btn{background:var(--blue);border:none;border-radius:7px;color:#fff;font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;padding:10px 18px;cursor:pointer;letter-spacing:1px;text-transform:uppercase;transition:.2s;width:100%;}
+.add-btn:hover{background:var(--blue2);}
+
+/* SKILLS */
+.skills-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;}
+.skill-card{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:14px;position:relative;overflow:hidden;}
+.skill-top{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.skill-icon{font-size:26px;}
+.skill-name{font-family:'Cinzel',serif;font-size:12px;font-weight:700;color:var(--text);letter-spacing:1px;}
+.skill-sub{font-size:10px;color:var(--text2);margin-top:1px;}
+.skill-bar-wrap{margin-bottom:6px;}
+.skill-bar{height:5px;background:var(--bg3);border-radius:3px;overflow:hidden;}
+.skill-bar-fill{height:100%;border-radius:3px;transition:width .5s ease;}
+.skill-pts-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.skill-level-txt{font-size:11px;color:var(--text2);}
+.skill-up-btn{width:100%;background:transparent;border:1px solid var(--border2);border-radius:5px;color:var(--text2);font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:700;padding:5px 8px;cursor:pointer;transition:.2s;text-transform:uppercase;letter-spacing:.5px;}
+.skill-up-btn:not([disabled]):hover{border-color:var(--sc,var(--blue));color:var(--sc,var(--blue));}
+.skill-up-btn[disabled]{cursor:default;opacity:.5;}
+.skill-pts-banner{background:var(--panel2);border:1px solid var(--gold);border-radius:8px;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.skill-pts-val{font-family:'Cinzel',serif;font-size:18px;font-weight:700;color:var(--gold);}
+.skill-pts-label{font-size:11px;color:var(--text2);letter-spacing:1px;text-transform:uppercase;}
+
+/* ACHIEVEMENTS */
+.achiev-list{display:flex;flex-direction:column;gap:8px;}
+.achiev-card{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:14px;display:flex;gap:12px;align-items:center;opacity:.35;transition:.3s;}
+.achiev-card.unlocked{opacity:1;border-color:var(--gold);box-shadow:0 0 12px rgba(200,169,74,.12);}
+.achiev-icon{font-size:26px;flex-shrink:0;width:36px;text-align:center;}
+.achiev-name{font-family:'Cinzel',serif;font-size:12px;font-weight:700;color:var(--gold);margin-bottom:2px;}
+.achiev-desc{font-size:11px;color:var(--text2);}
+.achiev-date{font-size:10px;color:var(--text3);margin-top:3px;}
+
+/* NOTIFICATIONS */
+.notif{position:fixed;top:16px;right:16px;background:var(--panel2);border:1px solid var(--gold);border-radius:10px;padding:12px 16px;z-index:999;animation:notifIn .3s ease,notifOut .4s ease 2.4s forwards;box-shadow:0 0 24px rgba(200,169,74,.2);max-width:260px;}
+@keyframes notifIn{from{opacity:0;transform:translateX(110%)}to{opacity:1;transform:translateX(0)}}
+@keyframes notifOut{from{opacity:1}to{opacity:0;pointer-events:none}}
+.notif-title{font-family:'Cinzel',serif;font-size:12px;color:var(--gold);margin-bottom:3px;font-weight:700;}
+.notif-body{font-size:12px;color:var(--text2);}
+
+/* NAME EDIT */
+.name-edit-wrap{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:300;align-items:center;justify-content:center;}
+.name-edit-wrap.open{display:flex;}
+.name-edit-box{background:var(--panel);border:1px solid var(--gold);border-radius:14px;padding:24px 20px;width:300px;text-align:center;}
+.name-edit-title{font-family:'Cinzel',serif;font-size:15px;color:var(--gold);margin-bottom:14px;letter-spacing:2px;}
+.name-edit-input{background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:12px 14px;color:var(--text);font-family:'Cinzel',serif;font-size:17px;outline:none;text-align:center;width:100%;margin-bottom:14px;}
+.name-edit-input:focus{border-color:var(--gold);}
+.name-edit-actions{display:flex;gap:8px;}
+
+/* LEVEL UP FX */
+.levelup-overlay{position:fixed;inset:0;z-index:400;pointer-events:none;display:flex;align-items:center;justify-content:center;opacity:0;transition:.4s;}
+.levelup-overlay.show{opacity:1;}
+.levelup-inner{text-align:center;animation:lvlPop .6s cubic-bezier(.17,.67,.4,1.3) forwards;}
+@keyframes lvlPop{from{transform:scale(.4);opacity:0}to{transform:scale(1);opacity:1}}
+.levelup-text{font-family:'Cinzel',serif;font-size:42px;font-weight:900;background:linear-gradient(135deg,var(--gold),var(--gold2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 20px rgba(200,169,74,.8));letter-spacing:4px;}
+.levelup-sub{font-size:16px;color:var(--text);letter-spacing:3px;text-transform:uppercase;margin-top:8px;}
+
+/* SETTINGS */
+.settings-panel{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:16px;margin-top:10px;}
+.setting-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);}
+.setting-row:last-child{border-bottom:none;}
+.setting-label{font-size:13px;color:var(--text);font-weight:600;}
+.setting-sub{font-size:11px;color:var(--text2);margin-top:2px;}
+.setting-btn{background:transparent;border:1px solid var(--border2);border-radius:6px;color:var(--text2);font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:700;padding:6px 12px;cursor:pointer;transition:.2s;}
+.setting-btn:hover{border-color:var(--blue);color:var(--blue);}
+.setting-btn.danger{border-color:rgba(255,74,74,.4);color:var(--red);}
+.setting-btn.danger:hover{background:rgba(255,74,74,.1);}
+.dist-input{width:70px;background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:6px 10px;color:var(--text);font-family:'Rajdhani',sans-serif;font-size:14px;text-align:center;outline:none;}
+.dist-input:focus{border-color:var(--blue);}
+
+/* BADGES & STREAKS */
+.streak-bar{background:linear-gradient(135deg,rgba(255,154,74,.1),rgba(255,154,74,.05));border:1px solid rgba(255,154,74,.3);border-radius:10px;padding:12px 16px;margin:0 16px 14px;display:flex;align-items:center;gap:12px;}
+.streak-icon{font-size:22px;}
+.streak-info{flex:1;}
+.streak-val{font-family:'Cinzel',serif;font-size:16px;font-weight:700;color:var(--orange);}
+.streak-label{font-size:11px;color:var(--text2);letter-spacing:1px;}
+
+/* Responsive fix for very small screens */
+@media(max-width:360px){
+  .stats-grid{grid-template-columns:repeat(3,1fr);}
+  .stat-val{font-size:16px;}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- HEADER -->
+  <div class="header">
+    <div class="system-tag">★ Système d'éveil activé ★</div>
+    <div class="app-title">Solo Rising</div>
+    <div class="divider"></div>
+  </div>
+
+  <!-- PROFILE -->
+  <div class="profile">
+    <div class="avatar-wrap">
+      <div class="avatar" onclick="openNameEdit()" id="avatar-el">
+        <span id="avatar-emoji">⚔️</span>
+        <div class="avatar-ring"><div class="avatar-dot"></div></div>
+      </div>
+    </div>
+    <div>
+      <div class="player-name-display" onclick="openNameEdit()">
+        <span id="player-name">Chasseur</span>
+        <span class="edit-icon">✏️</span>
+      </div>
+      <div class="player-rank" id="player-rank">RANG E — CHASSEUR</div>
+      <div class="xp-row">
+        <span style="color:var(--blue2);font-weight:600;font-size:10px;">EXPÉRIENCE</span>
+        <span id="xp-label">0 / 100 XP</span>
+      </div>
+      <div class="xp-bar"><div class="xp-fill" id="xp-bar" style="width:0%"></div></div>
+    </div>
+    <div class="level-badge">
+      <div class="level-num" id="level-num">1</div>
+      <div class="level-label">Niveau</div>
+    </div>
+  </div>
+
+  <!-- STREAK -->
+  <div class="streak-bar">
+    <div class="streak-icon">🔥</div>
+    <div class="streak-info">
+      <div class="streak-val" id="streak-val">0 jours</div>
+      <div class="streak-label">SÉRIE EN COURS</div>
+    </div>
+    <div style="text-align:right;">
+      <div style="font-size:11px;color:var(--text2);">Quêtes</div>
+      <div style="font-family:'Cinzel',serif;font-size:16px;color:var(--gold);" id="total-done-display">0</div>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats-grid" id="stats-grid"></div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('quests')">Quêtes</div>
+    <div class="tab" onclick="switchTab('skills')">Skills</div>
+    <div class="tab" onclick="switchTab('achievements')">Titres</div>
+    <div class="tab" onclick="switchTab('settings')">⚙️</div>
+  </div>
+
+  <!-- QUESTS TAB -->
+  <div class="tab-content active" id="tab-quests">
+    <div class="sec-head">
+      <div class="sec-title" style="color:var(--blue2);">Quêtes Quotidiennes</div>
+      <div class="sec-badge badge-daily" id="daily-count">0/0</div>
+    </div>
+    <div class="quest-list" id="daily-quests"></div>
+
+    <div class="sec-head" style="margin-top:22px;">
+      <div class="sec-title" style="color:var(--purple2);">Quêtes Spéciales</div>
+      <div class="sec-badge badge-special">Hebdomadaire</div>
+    </div>
+    <div class="quest-list" id="special-quests"></div>
+
+    <!-- ADD CUSTOM QUEST -->
+    <div class="add-panel" style="margin-top:8px;">
+      <div class="add-panel-title">+ Nouvelle Quête</div>
+      <div class="add-row">
+        <input class="add-input" id="aq-name" placeholder="Nom de la quête..." />
+        <input class="add-input" id="aq-desc" placeholder="Description..." />
+      </div>
+      <div class="add-row-inline" style="margin-bottom:10px;">
+        <input class="add-input" id="aq-xp" type="number" placeholder="XP (ex: 50)" min="1" />
+        <input class="add-input" id="aq-goal" type="number" placeholder="Objectif (ex: 30)" min="1" />
+      </div>
+      <div class="add-row" style="margin-bottom:10px;">
+        <select class="add-select" id="aq-proof">
+          <option value="none">Pas de preuve requise</option>
+          <option value="camera">Preuve par caméra 📷</option>
+          <option value="screenshot">Screenshot requis 🖼️</option>
+          <option value="gps">GPS / Course 🏃</option>
+        </select>
+        <select class="add-select" id="aq-color">
+          <option value="var(--blue)">Bleu</option>
+          <option value="var(--red)">Rouge</option>
+          <option value="var(--green)">Vert</option>
+          <option value="var(--purple2)">Violet</option>
+          <option value="var(--gold)">Or</option>
+          <option value="var(--orange)">Orange</option>
+        </select>
+      </div>
+      <button class="add-btn" onclick="addCustomQuest()">CRÉER LA QUÊTE</button>
+    </div>
+  </div>
+
+  <!-- SKILLS TAB -->
+  <div class="tab-content" id="tab-skills">
+    <div class="skill-pts-banner">
+      <div>
+        <div class="skill-pts-val" id="skill-pts-val">0</div>
+        <div class="skill-pts-label">Points disponibles</div>
+      </div>
+      <div style="font-size:11px;color:var(--text2);text-align:right;line-height:1.6;">+3 pts<br>par niveau</div>
+    </div>
+    <div class="skills-grid" id="skills-grid"></div>
+  </div>
+
+  <!-- ACHIEVEMENTS TAB -->
+  <div class="tab-content" id="tab-achievements">
+    <div class="sec-head">
+      <div class="sec-title" style="color:var(--gold);">Titres</div>
+    </div>
+    <div class="achiev-list" id="achiev-list"></div>
+  </div>
+
+  <!-- SETTINGS TAB -->
+  <div class="tab-content" id="tab-settings">
+    <div class="sec-head">
+      <div class="sec-title" style="color:var(--text2);">Paramètres</div>
+    </div>
+    <div class="settings-panel">
+      <div class="setting-row">
+        <div>
+          <div class="setting-label">Nom du joueur</div>
+          <div class="setting-sub" id="settings-name-preview">Chasseur</div>
+        </div>
+        <button class="setting-btn" onclick="openNameEdit()">Modifier</button>
+      </div>
+      <div class="setting-row">
+        <div>
+          <div class="setting-label">Distance de course</div>
+          <div class="setting-sub">Objectif quotidien en km</div>
+        </div>
+        <input class="dist-input" id="run-dist-input" type="number" min="0.5" max="50" step="0.5" value="2" onchange="updateRunDist()" />
+      </div>
+      <div class="setting-row">
+        <div>
+          <div class="setting-label">Avatar</div>
+          <div class="setting-sub">Choisir ton emoji</div>
+        </div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;max-width:200px;justify-content:flex-end;">
+          <span style="cursor:pointer;font-size:20px;" onclick="setAvatar('⚔️')">⚔️</span>
+          <span style="cursor:pointer;font-size:20px;" onclick="setAvatar('🗡️')">🗡️</span>
+          <span style="cursor:pointer;font-size:20px;" onclick="setAvatar('🔥')">🔥</span>
+          <span style="cursor:pointer;font-size:20px;" onclick="setAvatar('⚡')">⚡</span>
+          <span style="cursor:pointer;font-size:20px;" onclick="setAvatar('🌑')">🌑</span>
+          <span style="cursor:pointer;font-size:20px;" onclick="setAvatar('💎')">💎</span>
+          <span style="cursor:pointer;font-size:20px;" onclick="setAvatar('🐉')">🐉</span>
+          <span style="cursor:pointer;font-size:20px;" onclick="setAvatar('👁️')">👁️</span>
+        </div>
+      </div>
+      <div class="setting-row">
+        <div>
+          <div class="setting-label">Réinitialiser</div>
+          <div class="setting-sub">Effacer toutes les données</div>
+        </div>
+        <button class="setting-btn danger" onclick="resetGame()">Reset</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- NAME EDIT -->
+<div class="name-edit-wrap" id="name-edit-wrap">
+  <div class="name-edit-box">
+    <div class="name-edit-title">⚔️ NOM DU CHASSEUR</div>
+    <input class="name-edit-input" id="name-edit-input" maxlength="20" placeholder="Ton nom..." />
+    <div class="name-edit-actions">
+      <button class="btn-secondary" onclick="closeNameEdit()">Annuler</button>
+      <button class="btn-primary gold" onclick="saveName()">Confirmer</button>
+    </div>
+  </div>
+</div>
+
+<!-- PROOF MODAL -->
+<div class="modal-overlay" id="proof-modal">
+  <div class="modal">
+    <div class="modal-title">
+      <span id="modal-icon">📷</span>
+      <span id="modal-title">Preuve requise</span>
+      <button class="modal-close" onclick="closeModal()">✕ Fermer</button>
+    </div>
+    <div class="modal-desc" id="modal-desc">Prends une photo pour valider ta quête.</div>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<!-- LEVEL UP FX -->
+<div class="levelup-overlay" id="levelup-overlay">
+  <div class="levelup-inner">
+    <div class="levelup-text">NIVEAU <span id="lu-num"></span></div>
+    <div class="levelup-sub">atteint !</div>
+  </div>
+</div>
+
+<script>
+// ─── DATA ─────────────────────────────────────────────────────────────────────
+const STATS_DEF = [
+  {key:'str',label:'FOR',name:'Force',color:'#ff6a4a'},
+  {key:'agi',label:'AGI',name:'Agilité',color:'#4aff8a'},
+  {key:'vit',label:'VIT',name:'Vitalité',color:'#ff4a8a'},
+  {key:'int',label:'INT',name:'Intel',color:'#4a9aff'},
+  {key:'per',label:'PER',name:'Percep.',color:'#ffca4a'},
+  {key:'sen',label:'SEN',name:'Sens',color:'#ca4aff'}
+];
+
+const SKILLS_DEF = [
+  {key:'combat',name:'Combat',icon:'⚔️',sub:'Arts martiaux',color:'#ff6a4a'},
+  {key:'endurance',name:'Endurance',icon:'🛡️',sub:'Résistance',color:'#4aff8a'},
+  {key:'meditation',name:'Méditation',icon:'🧘',sub:'Concentration',color:'#4a9aff'},
+  {key:'stealth',name:'Furtivité',icon:'🌙',sub:'Discrétion',color:'#ca4aff'},
+  {key:'leadership',name:'Commandement',icon:'👑',sub:'Charisme',color:'#ffca4a'},
+  {key:'shadow',name:'Ombres',icon:'🖤',sub:'Pouvoir ultime',color:'#8a8aff'}
+];
+
+const RANKS = [
+  [1,'E','#9a9a9a'],[5,'D','#4a9aff'],[10,'C','#4aff8a'],
+  [20,'B','#ffca4a'],[30,'A','#ff4a4a'],[50,'S','#ca4aff'],
+  [75,'SS','var(--gold)'],[100,'SSS','#ffffff']
+];
+
+const ACHIEVEMENTS_DEF = [
+  {id:'a1',name:'Première quête',desc:'Compléter sa 1ère quête',icon:'⭐',cond:s=>s.totalCompleted>=1},
+  {id:'a2',name:'Rang D débloqué',desc:'Atteindre le niveau 5',icon:'💎',cond:s=>s.level>=5},
+  {id:'a3',name:'Guerrier acharné',desc:'10 quêtes complétées',icon:'⚔️',cond:s=>s.totalCompleted>=10},
+  {id:'a4',name:'Seigneur des ombres',desc:'Atteindre le niveau 10',icon:'🌑',cond:s=>s.level>=10},
+  {id:'a5',name:'Polyvalent',desc:'Toutes stats > 20',icon:'🔮',cond:s=>Object.values(s.stats).every(v=>v>=20)},
+  {id:'a6',name:'Maître des donjons',desc:'50 quêtes complétées',icon:'🏆',cond:s=>s.totalCompleted>=50},
+  {id:'a7',name:'Rang S',desc:'Atteindre le niveau 50',icon:'🌟',cond:s=>s.level>=50},
+  {id:'a8',name:'Valorant Master',desc:'Gagner 3 parties Valorant',icon:'🎯',cond:s=>s.valorantWins>=3},
+  {id:'a9',name:'Coureur de fond',desc:'Courir 100km total',icon:'🏃',cond:s=>(s.totalKm||0)>=100},
+  {id:'a10',name:'Ironman',desc:'Séries de 7 jours',icon:'🔥',cond:s=>s.streak>=7}
+];
+
+// ─── DEFAULT QUESTS (scale with level) ────────────────────────────────────────
+function getDailyQuests(level, runDist) {
+  const pushups = Math.max(10, 10 + (level-1)*2);
+  const squats = Math.max(5, 5 + (level-1)*2);
+  const abs = Math.max(10, 10 + (level-1)*2);
+  const medMin = 5;
+  const km = runDist || 2;
+  return [
+    {id:'d1',name:`${pushups} Pompes`,desc:`Force brute — niveau ${level}`,xp:Math.round(20+level*3),reward:'FOR+1',color:'var(--red)',stat:'str',progMax:pushups,proof:'camera',proofLabel:'Montre tes pompes !'},
+    {id:'d2',name:`${km} km de course`,desc:`Endure la distance`,xp:Math.round(30+level*5),reward:'AGI+1 VIT+1',color:'var(--green)',stat:'agi',progMax:km,proof:'gps',proofLabel:'Course GPS'},
+    {id:'d3',name:`${squats} Squats`,desc:`Fortifie tes jambes`,xp:Math.round(20+level*3),reward:'FOR+1',color:'var(--orange)',stat:'str',progMax:squats,proof:'camera',proofLabel:'Montre tes squats !'},
+    {id:'d4',name:`${abs} Abdominaux`,desc:`Core solide`,xp:Math.round(20+level*3),reward:'VIT+1',color:'var(--blue2)',stat:'vit',progMax:abs,proof:'camera',proofLabel:'Montre tes abdos !'},
+    {id:'d5',name:`Méditation ${medMin} min`,desc:`Clarté mentale`,xp:Math.round(15+level*2),reward:'INT+1 SEN+1',color:'var(--purple2)',stat:'int',progMax:medMin,proof:'camera',proofLabel:'En position de méditation'}
+  ];
+}
+
+const DEFAULT_SPECIAL_QUESTS = [
+  {id:'s1',name:'Triomphe Valorant',desc:'Gagne 3 parties — prouve avec des screenshots',xp:500,reward:'AGI+2 PER+2',color:'var(--purple2)',progMax:3,proof:'valorant',proofLabel:'Screenshots de victoires'},
+  {id:'s2',name:'Boss Training',desc:'Séance intense de 2h',xp:300,reward:'Tous stats +2',color:'var(--gold)',progMax:1,proof:'camera',proofLabel:'Prouve ta séance !'}
+];
+
+// ─── STATE ─────────────────────────────────────────────────────────────────────
+let S;
+function defaultState(){
+  return {
+    name:'Chasseur',avatar:'⚔️',
+    level:1,xp:0,xpTotal:0,
+    stats:{str:10,agi:10,vit:10,int:10,per:10,sen:10},
+    skills:{combat:0,endurance:0,meditation:0,stealth:0,leadership:0,shadow:0},
+    skillPoints:0,
+    questProgress:{},questCompleted:{},
+    questProofs:{},
+    userQuests:[],
+    totalCompleted:0,
+    achievements:{},
+    lastReset:new Date().toDateString(),
+    runDist:2,
+    valorantWins:0,
+    totalKm:0,
+    streak:0,
+    lastStreakDate:'',
+    valorantScreens:{}
+  };
+}
+
+function load(){
+  try{
+    const s=localStorage.getItem('solo_rising_v3');
+    if(s) S=Object.assign(defaultState(),JSON.parse(s));
+    else S=defaultState();
+  }catch(e){S=defaultState();}
+  checkReset();
+}
+
+function save(){
+  try{localStorage.setItem('solo_rising_v3',JSON.stringify(S));}catch(e){}
+}
+
+function checkReset(){
+  const today=new Date().toDateString();
+  if(S.lastReset!==today){
+    const quests=getDailyQuests(S.level,S.runDist);
+    quests.forEach(q=>{S.questCompleted[q.id]=false;S.questProgress[q.id]=0;delete S.questProofs[q.id];});
+    // Update streak
+    const yesterday=new Date();yesterday.setDate(yesterday.getDate()-1);
+    if(S.lastStreakDate===yesterday.toDateString()) S.streak=(S.streak||0)+1;
+    else if(S.lastStreakDate!==today) S.streak=0;
+    S.lastReset=today;
+    save();
+  }
+}
+
+// ─── XP & LEVEL ───────────────────────────────────────────────────────────────
+function xpNeeded(lvl){return Math.floor(100*Math.pow(lvl,1.5));}
+function getRank(lvl){let r=RANKS[0];for(let x of RANKS){if(lvl>=x[0])r=x;}return r;}
+
+function addXP(amount){
+  S.xp+=amount;S.xpTotal+=amount;
+  const needed=xpNeeded(S.level);
+  while(S.xp>=xpNeeded(S.level)){
+    S.xp-=xpNeeded(S.level);
+    S.level++;
+    S.skillPoints+=3;
+    showLevelUp(S.level);
+  }
+  save();renderAll();
+}
+
+function showLevelUp(lvl){
+  const el=document.getElementById('levelup-overlay');
+  document.getElementById('lu-num').textContent=lvl;
+  el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'),2200);
+  showNotif('🌟 Niveau supérieur !',`Niveau ${lvl} atteint ! +3 pts de compétence`);
+}
+
+// ─── RENDER ───────────────────────────────────────────────────────────────────
+function renderAll(){renderProfile();renderStats();renderQuests();renderSkills();renderAchievements();}
+
+function renderProfile(){
+  const needed=xpNeeded(S.level);
+  const pct=Math.min(100,Math.round((S.xp/needed)*100));
+  document.getElementById('xp-bar').style.width=pct+'%';
+  document.getElementById('xp-label').textContent=`${S.xp} / ${needed} XP`;
+  document.getElementById('level-num').textContent=S.level;
+  document.getElementById('player-name').textContent=S.name;
+  document.getElementById('avatar-emoji').textContent=S.avatar;
+  document.getElementById('settings-name-preview').textContent=S.name;
+  document.getElementById('streak-val').textContent=`${S.streak||0} jours`;
+  document.getElementById('total-done-display').textContent=S.totalCompleted;
+  const [,rankLabel,rankColor]=getRank(S.level);
+  const r=document.getElementById('player-rank');
+  r.textContent=`RANG ${rankLabel} — CHASSEUR`;
+  r.style.color=rankColor;r.style.borderColor=rankColor;
+  r.style.background=rankColor.startsWith('var')?'rgba(200,169,74,.15)':rankColor+'22';
+  r.style.border=`1px solid ${rankColor}`;
+  document.getElementById('run-dist-input').value=S.runDist||2;
+}
+
+function renderStats(){
+  const g=document.getElementById('stats-grid');g.innerHTML='';
+  STATS_DEF.forEach(sd=>{
+    const el=document.createElement('div');
+    el.className='stat-card';el.style.setProperty('--accent',sd.color);
+    el.innerHTML=`<div class="stat-lbl">${sd.label}</div><div class="stat-val" style="color:${sd.color}">${S.stats[sd.key]}</div><div class="stat-nm">${sd.name}</div>`;
+    g.appendChild(el);
+  });
+}
+
+function renderQuests(){
+  const dailyDef=getDailyQuests(S.level,S.runDist);
+  const allDaily=[...dailyDef,...S.userQuests];
+  const dailyEl=document.getElementById('daily-quests');
+  dailyEl.innerHTML='';
+  let done=0;
+  allDaily.forEach(q=>{
+    const isDone=!!S.questCompleted[q.id];
+    if(isDone)done++;
+    const el=buildQuestEl(q,isDone);
+    dailyEl.appendChild(el);
+  });
+  document.getElementById('daily-count').textContent=`${done}/${allDaily.length}`;
+
+  const specialEl=document.getElementById('special-quests');
+  specialEl.innerHTML='';
+  DEFAULT_SPECIAL_QUESTS.forEach(q=>{
+    const isDone=!!S.questCompleted[q.id];
+    const el=buildQuestEl(q,isDone);
+    specialEl.appendChild(el);
+  });
+}
+
+function buildQuestEl(q,isDone){
+  const prog=S.questProgress[q.id]||0;
+  const pct=q.progMax?Math.min(100,Math.round((prog/q.progMax)*100)):(isDone?100:0);
+  const el=document.createElement('div');
+  el.className='quest-item'+(isDone?' done':'');
+  el.style.setProperty('--qc',q.color||'var(--blue)');
+
+  let proofBtnHtml='';
+  if(!isDone && q.proof && q.proof!=='none'){
+    const icons={camera:'📷',gps:'🏃',screenshot:'🖼️',valorant:'🎮'};
+    const labels={camera:'Valider avec caméra',gps:'Tracker GPS',screenshot:'Upload screenshot',valorant:'Preuves Valorant'};
+    proofBtnHtml=`<button class="quest-action-btn" onclick="openProof('${q.id}',event)">${icons[q.proof]||'📷'} ${labels[q.proof]||'Valider'}</button>`;
+  } else if(!isDone){
+    proofBtnHtml=`<button class="quest-action-btn" onclick="quickComplete('${q.id}',event)">✓ Terminé</button>`;
+  }
+
+  let progressHtml='';
+  if(q.progMax>1){
+    progressHtml=`<div class="prog-row"><div class="prog-bar"><div class="prog-fill" style="width:${pct}%;background:${q.color||'var(--blue)'}"></div></div><div class="prog-txt">${prog}/${q.progMax}</div></div>`;
+  }
+
+  el.innerHTML=`
+    <div class="quest-check">${isDone?'✓':''}</div>
+    <div>
+      <div class="quest-name">${q.name}</div>
+      <div class="quest-desc">${q.desc}</div>
+      ${progressHtml}
+      ${proofBtnHtml?`<div class="quest-actions" style="margin-top:8px;">${proofBtnHtml}</div>`:''}
+    </div>
+    <div style="text-align:right;flex-shrink:0;">
+      <div class="quest-xp">+${q.xp} XP</div>
+      <div class="quest-stat-lbl">${q.reward||''}</div>
+    </div>`;
+  return el;
+}
+
+function renderSkills(){
+  const g=document.getElementById('skills-grid');g.innerHTML='';
+  document.getElementById('skill-pts-val').textContent=S.skillPoints;
+  SKILLS_DEF.forEach(sk=>{
+    const lv=S.skills[sk.key]||0;
+    const maxLv=10;const pct=Math.round((lv/maxLv)*100);
+    const canUp=S.skillPoints>0&&lv<maxLv;
+    const el=document.createElement('div');el.className='skill-card';
+    el.innerHTML=`
+      <div class="skill-top"><div class="skill-icon">${sk.icon}</div><div><div class="skill-name">${sk.name}</div><div class="skill-sub">${sk.sub}</div></div></div>
+      <div class="skill-bar-wrap"><div class="skill-bar"><div class="skill-bar-fill" style="width:${pct}%;background:${sk.color}"></div></div></div>
+      <div class="skill-pts-row"><span class="skill-level-txt">Niv. ${lv}/${maxLv}</span></div>
+      <button class="skill-up-btn" style="--sc:${sk.color}" ${canUp?'':'disabled'} onclick="levelSkill('${sk.key}')">
+        ${canUp?'▲ Améliorer (-1 pt)':lv>=maxLv?'✓ Maximum':'Pts insuffisants'}
+      </button>`;
+    g.appendChild(el);
+  });
+}
+
+function renderAchievements(){
+  const el=document.getElementById('achiev-list');el.innerHTML='';
+  ACHIEVEMENTS_DEF.forEach(a=>{
+    const unlocked=!!S.achievements[a.id];
+    const card=document.createElement('div');
+    card.className='achiev-card'+(unlocked?' unlocked':'');
+    card.innerHTML=`<div class="achiev-icon">${a.icon}</div><div><div class="achiev-name">${a.name}</div><div class="achiev-desc">${a.desc}</div>${unlocked?`<div class="achiev-date">✓ Débloqué</div>`:''}</div>`;
+    el.appendChild(card);
+  });
+}
+
+// ─── QUEST COMPLETION ─────────────────────────────────────────────────────────
+function quickComplete(id,e){
+  e&&e.stopPropagation();
+  const allQ=[...getDailyQuests(S.level,S.runDist),...S.userQuests,...DEFAULT_SPECIAL_QUESTS];
+  const q=allQ.find(x=>x.id===id);
+  if(!q||S.questCompleted[id])return;
+  completeQuest(q);
+}
+
+function completeQuest(q){
+  S.questCompleted[q.id]=true;
+  S.questProgress[q.id]=q.progMax||1;
+  S.totalCompleted++;
+  S.lastStreakDate=new Date().toDateString();
+  if(q.stat&&S.stats[q.stat]!==undefined) S.stats[q.stat]++;
+  if(q.reward){
+    if(q.reward.includes('AGI')) S.stats.agi++;
+    if(q.reward.includes('VIT')) S.stats.vit++;
+    if(q.reward.includes('INT')) S.stats.int++;
+    if(q.reward.includes('PER')) S.stats.per++;
+    if(q.reward.includes('SEN')) S.stats.sen++;
+    if(q.reward.includes('Tous stats')) Object.keys(S.stats).forEach(k=>S.stats[k]+=2);
+  }
+  showNotif('✅ Quête accomplie !',`+${q.xp} XP — ${q.name}`);
+  checkAchievements();
+  addXP(q.xp);
+}
+
+function checkAchievements(){
+  ACHIEVEMENTS_DEF.forEach(a=>{
+    if(!S.achievements[a.id]&&a.cond(S)){
+      S.achievements[a.id]=true;
+      setTimeout(()=>showNotif('🏆 Titre débloqué !',a.name),600);
+    }
+  });
+}
+
+function levelSkill(key){
+  if(S.skillPoints<=0)return;
+  if((S.skills[key]||0)>=10)return;
+  S.skills[key]=(S.skills[key]||0)+1;
+  S.skillPoints--;
+  const sk=SKILLS_DEF.find(s=>s.key===key);
+  showNotif('⬆ Compétence améliorée',`${sk.name} → Niveau ${S.skills[key]}`);
+  save();renderSkills();
+}
+
+// ─── PROOF MODAL ──────────────────────────────────────────────────────────────
+let currentProofQuestId=null;
+let cameraStream=null;
+let photoCaptured=null;
+
+function openProof(id,e){
+  e&&e.stopPropagation();
+  const allQ=[...getDailyQuests(S.level,S.runDist),...S.userQuests,...DEFAULT_SPECIAL_QUESTS];
+  const q=allQ.find(x=>x.id===id);
+  if(!q||S.questCompleted[id])return;
+  currentProofQuestId=id;
+  const modal=document.getElementById('proof-modal');
+  const icons={camera:'📷',gps:'🏃',screenshot:'🖼️',valorant:'🎮'};
+  document.getElementById('modal-icon').textContent=icons[q.proof]||'📋';
+  document.getElementById('modal-title').textContent=q.proofLabel||'Preuve requise';
+  document.getElementById('modal-desc').textContent=q.desc;
+  const body=document.getElementById('modal-body');
+  if(q.proof==='camera') buildCameraUI(body,q);
+  else if(q.proof==='gps') buildGPSUI(body,q);
+  else if(q.proof==='valorant') buildValorantUI(body,q);
+  else if(q.proof==='screenshot') buildScreenshotUI(body,q);
+  else buildSimpleUI(body,q);
+  modal.classList.add('open');
+}
+
+function closeModal(){
+  document.getElementById('proof-modal').classList.remove('open');
+  stopCamera();
+  stopGPS();
+  currentProofQuestId=null;
+  photoCaptured=null;
+}
+
+// CAMERA UI
+function buildCameraUI(body,q){
+  body.innerHTML=`
+    <div class="cam-area">
+      <video id="camera-feed" autoplay playsinline></video>
+      <canvas id="cam-canvas"></canvas>
+      <div class="cam-overlay"><div class="cam-status" id="cam-status">Chargement caméra...</div></div>
+    </div>
+    <img id="photo-preview" class="photo-preview" />
+    <div class="proof-actions">
+      <button class="btn-secondary" id="cam-retake-btn" style="display:none" onclick="retakePhoto()">🔄 Reprendre</button>
+      <button class="btn-primary" id="cam-snap-btn" onclick="snapPhoto()">📸 Prendre la photo</button>
+      <button class="btn-primary green" id="cam-validate-btn" style="display:none" onclick="validateCameraProof()">✅ Valider</button>
+    </div>`;
+  startCamera();
+}
+
+async function startCamera(){
+  try{
+    cameraStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'},audio:false});
+    const v=document.getElementById('camera-feed');
+    if(v){v.srcObject=cameraStream;document.getElementById('cam-status').textContent='Caméra active ✓';}
+  }catch(err){
+    const st=document.getElementById('cam-status');
+    if(st)st.textContent='⚠️ Caméra non disponible';
+    const snap=document.getElementById('cam-snap-btn');
+    if(snap)snap.textContent='✅ Valider sans photo';
+  }
+}
+
+function stopCamera(){
+  if(cameraStream){cameraStream.getTracks().forEach(t=>t.stop());cameraStream=null;}
+}
+
+function snapPhoto(){
+  const video=document.getElementById('camera-feed');
+  const canvas=document.getElementById('cam-canvas');
+  const preview=document.getElementById('photo-preview');
+  if(!video||!video.srcObject){
+    // no camera — still validate
+    validateCameraProof();return;
+  }
+  canvas.width=video.videoWidth||320;
+  canvas.height=video.videoHeight||240;
+  canvas.getContext('2d').drawImage(video,0,0);
+  const dataURL=canvas.toDataURL('image/jpeg',.8);
+  photoCaptured=dataURL;
+  preview.src=dataURL;preview.style.display='block';
+  document.getElementById('cam-snap-btn').style.display='none';
+  document.getElementById('cam-retake-btn').style.display='flex';
+  document.getElementById('cam-validate-btn').style.display='flex';
+  stopCamera();
+}
+
+function retakePhoto(){
+  photoCaptured=null;
+  document.getElementById('photo-preview').style.display='none';
+  document.getElementById('cam-snap-btn').style.display='flex';
+  document.getElementById('cam-retake-btn').style.display='none';
+  document.getElementById('cam-validate-btn').style.display='none';
+  startCamera();
+}
+
+function validateCameraProof(){
+  const allQ=[...getDailyQuests(S.level,S.runDist),...S.userQuests,...DEFAULT_SPECIAL_QUESTS];
+  const q=allQ.find(x=>x.id===currentProofQuestId);
+  if(q){
+    if(photoCaptured) S.questProofs[q.id]=photoCaptured;
+    stopCamera();closeModal();completeQuest(q);
+  }
+}
+
+// GPS / RUNNING UI
+let gpsWatchId=null;let gpsPositions=[];let gpsDistKm=0;let gpsStarted=false;
+function buildGPSUI(body,q){
+  const target=q.progMax||S.runDist||2;
+  body.innerHTML=`
+    <div class="run-active-bar" id="run-active-bar" style="display:none">
+      <div class="run-pulse"></div>
+      <div class="run-active-txt">COURSE EN COURS</div>
+    </div>
+    <div class="map-area" id="map-container">
+      <div class="map-placeholder"><div class="icon">🗺️</div><div style="font-size:13px;color:var(--text2)">Carte GPS</div></div>
+    </div>
+    <div class="map-info">
+      <div class="map-stat"><div class="map-stat-val" id="gps-dist">0.00</div><div class="map-stat-lbl">km parcourus</div></div>
+      <div class="map-divider"></div>
+      <div class="map-stat"><div class="map-stat-val" style="color:var(--blue2)" id="gps-target">${target}</div><div class="map-stat-lbl">km objectif</div></div>
+      <div class="map-divider"></div>
+      <div class="map-stat"><div class="map-stat-val" style="color:var(--gold)" id="gps-pct">0%</div><div class="map-stat-lbl">progression</div></div>
+    </div>
+    <div class="proof-actions">
+      <button class="btn-primary" id="gps-start-btn" onclick="startGPS()">🏃 Démarrer la course</button>
+      <button class="btn-primary green" id="gps-stop-btn" style="display:none" onclick="stopGPSAndValidate()">⏹ Terminer</button>
+    </div>`;
+  loadLeafletMap();
+}
+
+let leafletMap=null;let leafletPolyline=null;let leafletMarker=null;
+
+function loadLeafletMap(){
+  const container=document.getElementById('map-container');
+  container.innerHTML='<div id="leaflet-map"></div>';
+  if(window.L){initMap();return;}
+  const link=document.createElement('link');
+  link.rel='stylesheet';link.href='https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+  document.head.appendChild(link);
+  const script=document.createElement('script');
+  script.src='https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+  script.onload=initMap;
+  document.head.appendChild(script);
+}
+
+function initMap(){
+  const mapDiv=document.getElementById('leaflet-map');
+  if(!mapDiv||leafletMap)return;
+  leafletMap=L.map('leaflet-map',{zoomControl:false});
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:18}).addTo(leafletMap);
+  if(navigator.geolocation){
+    navigator.geolocation.getCurrentPosition(p=>{
+      leafletMap.setView([p.coords.latitude,p.coords.longitude],15);
+    },()=>leafletMap.setView([48.8566,2.3522],13));
+  } else leafletMap.setView([48.8566,2.3522],13);
+}
+
+function startGPS(){
+  gpsPositions=[];gpsDistKm=0;gpsStarted=true;
+  document.getElementById('gps-start-btn').style.display='none';
+  document.getElementById('gps-stop-btn').style.display='flex';
+  document.getElementById('run-active-bar').style.display='flex';
+  if(!navigator.geolocation){showNotif('⚠️','GPS non disponible sur cet appareil');return;}
+  if(leafletMap){leafletPolyline=L.polyline([],{color:'#4aff8a',weight:4}).addTo(leafletMap);}
+  gpsWatchId=navigator.geolocation.watchPosition(pos=>{
+    const lat=pos.coords.latitude,lng=pos.coords.longitude;
+    if(gpsPositions.length>0){
+      const prev=gpsPositions[gpsPositions.length-1];
+      gpsDistKm+=haversine(prev[0],prev[1],lat,lng);
+    }
+    gpsPositions.push([lat,lng]);
+    if(leafletMap&&leafletPolyline){
+      leafletPolyline.addLatLng([lat,lng]);
+      leafletMap.panTo([lat,lng]);
+      if(leafletMarker) leafletMap.removeLayer(leafletMarker);
+      leafletMarker=L.circleMarker([lat,lng],{color:'#4aff8a',radius:8,fillOpacity:1}).addTo(leafletMap);
+    }
+    const target=parseFloat(document.getElementById('gps-target').textContent)||S.runDist||2;
+    const pct=Math.min(100,Math.round((gpsDistKm/target)*100));
+    document.getElementById('gps-dist').textContent=gpsDistKm.toFixed(2);
+    document.getElementById('gps-pct').textContent=pct+'%';
+  },{enableHighAccuracy:true,maximumAge:0,timeout:5000});
+}
+
+function haversine(lat1,lon1,lat2,lon2){
+  const R=6371;const dLat=(lat2-lat1)*Math.PI/180;const dLon=(lon2-lon1)*Math.PI/180;
+  const a=Math.sin(dLat/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
+  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+}
+
+function stopGPS(){
+  if(gpsWatchId!==null){navigator.geolocation.clearWatch(gpsWatchId);gpsWatchId=null;}
+}
+
+function stopGPSAndValidate(){
+  stopGPS();
+  const allQ=[...getDailyQuests(S.level,S.runDist),...S.userQuests,...DEFAULT_SPECIAL_QUESTS];
+  const q=allQ.find(x=>x.id===currentProofQuestId);
+  if(q){
+    const target=q.progMax||S.runDist||2;
+    S.totalKm=(S.totalKm||0)+gpsDistKm;
+    S.questProgress[q.id]=gpsDistKm;
+    if(gpsDistKm>=target*0.9){
+      closeModal();completeQuest(q);
+    } else {
+      showNotif('⚠️ Distance insuffisante',`${gpsDistKm.toFixed(2)} km / ${target} km requis`);
+      document.getElementById('gps-start-btn').style.display='flex';
+      document.getElementById('gps-stop-btn').style.display='none';
+    }
+  }
+}
+
+// VALORANT UI
+function buildValorantUI(body,q){
+  const saved=S.valorantScreens[q.id]||[];
+  const prog=saved.length;
+  body.innerHTML=`
+    <div class="val-progress">
+      <div class="val-prog-label"><span>Victoires prouvées</span><span>${prog}/3</span></div>
+      <div class="val-prog-bar"><div class="val-prog-fill" id="val-prog-fill" style="width:${Math.round(prog/3*100)}%"></div></div>
+    </div>
+    <div class="val-screens" id="val-screens"></div>
+    <div class="proof-actions">
+      <button class="btn-primary" style="background:linear-gradient(135deg,#6a2aaa,var(--purple2))" onclick="validateValorant()">🎮 Valider les preuves</button>
+    </div>`;
+  if(!S.valorantScreens[q.id]) S.valorantScreens[q.id]=[];
+  buildValorantSlots(q);
+}
+
+function buildValorantSlots(q){
+  const container=document.getElementById('val-screens');
+  if(!container)return;
+  container.innerHTML='';
+  for(let i=0;i<3;i++){
+    const hasImg=S.valorantScreens[q.id]&&S.valorantScreens[q.id][i];
+    const slot=document.createElement('div');
+    slot.className='val-slot'+(hasImg?' filled':'');
+    slot.innerHTML=`
+      <div class="val-slot-num">${i+1}</div>
+      <div class="val-slot-info">
+        <div class="val-slot-title">${hasImg?'Victoire prouvée ✓':'Victoire '+(i+1)+' — Screenshot requis'}</div>
+        <div class="val-slot-sub">${hasImg?'Image uploadée':'Appuie pour choisir un screenshot'}</div>
+        ${hasImg?`<img src="${S.valorantScreens[q.id][i]}" class="val-img-preview" style="display:block" />`:''}
+      </div>
+      <div class="val-slot-check">${hasImg?'✅':'📎'}</div>
+      ${!hasImg?`<input type="file" accept="image/*" class="val-file-input" onchange="handleValorantImg(event,'${q.id}',${i})" />`:''}`;
+    container.appendChild(slot);
+  }
+}
+
+function handleValorantImg(e,qid,idx){
+  const file=e.target.files[0];
+  if(!file)return;
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    if(!S.valorantScreens[qid]) S.valorantScreens[qid]=[];
+    S.valorantScreens[qid][idx]=ev.target.result;
+    save();
+    const allQ=[...getDailyQuests(S.level,S.runDist),...S.userQuests,...DEFAULT_SPECIAL_QUESTS];
+    const q=allQ.find(x=>x.id===qid);
+    const prog=S.valorantScreens[qid].filter(Boolean).length;
+    const fill=document.getElementById('val-prog-fill');
+    if(fill) fill.style.width=Math.round(prog/3*100)+'%';
+    const label=document.querySelector('.val-prog-label span:last-child');
+    if(label) label.textContent=`${prog}/3`;
+    if(q) buildValorantSlots(q);
+    showNotif('🎮 Screenshot ajouté',`Victoire ${idx+1} enregistrée !`);
+  };
+  reader.readAsDataURL(file);
+}
+
+function validateValorant(){
+  const allQ=[...getDailyQuests(S.level,S.runDist),...S.userQuests,...DEFAULT_SPECIAL_QUESTS];
+  const q=allQ.find(x=>x.id===currentProofQuestId);
+  if(!q)return;
+  const screens=S.valorantScreens[q.id]||[];
+  const count=screens.filter(Boolean).length;
+  if(count<3){
+    showNotif('⚠️ Preuves insuffisantes',`${count}/3 screenshots uploadés`);return;
+  }
+  S.valorantWins=(S.valorantWins||0)+3;
+  closeModal();completeQuest(q);
+}
+
+// SCREENSHOT UI
+function buildScreenshotUI(body,q){
+  body.innerHTML=`
+    <div style="border:2px dashed var(--border2);border-radius:10px;padding:20px;text-align:center;margin-bottom:14px;cursor:pointer;position:relative;" onclick="document.getElementById('ss-input').click()">
+      <div style="font-size:32px;margin-bottom:8px;">🖼️</div>
+      <div style="font-size:13px;color:var(--text2);">Appuie pour choisir un screenshot</div>
+      <input id="ss-input" type="file" accept="image/*" style="position:absolute;inset:0;opacity:0;cursor:pointer;" onchange="handleScreenshot(event,'${q.id}')" />
+    </div>
+    <img id="ss-preview" style="width:100%;border-radius:10px;display:none;margin-bottom:14px;" />
+    <div class="proof-actions">
+      <button class="btn-primary green" id="ss-validate-btn" style="display:none" onclick="validateScreenshot()">✅ Valider</button>
+    </div>`;
+}
+
+function handleScreenshot(e,qid){
+  const file=e.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    const prev=document.getElementById('ss-preview');
+    prev.src=ev.target.result;prev.style.display='block';
+    S.questProofs[qid]=ev.target.result;
+    document.getElementById('ss-validate-btn').style.display='flex';
+    showNotif('🖼️ Screenshot reçu','Clique sur Valider pour confirmer');
+  };
+  reader.readAsDataURL(file);
+}
+
+function validateScreenshot(){
+  const allQ=[...getDailyQuests(S.level,S.runDist),...S.userQuests,...DEFAULT_SPECIAL_QUESTS];
+  const q=allQ.find(x=>x.id===currentProofQuestId);
+  if(q){closeModal();completeQuest(q);}
+}
+
+function buildSimpleUI(body,q){
+  body.innerHTML=`
+    <div style="text-align:center;padding:20px 0;">
+      <div style="font-size:48px;margin-bottom:12px;">✅</div>
+      <div style="font-size:14px;color:var(--text2);">Confirmes-tu avoir accompli cette quête ?</div>
+    </div>
+    <div class="proof-actions">
+      <button class="btn-secondary" onclick="closeModal()">Annuler</button>
+      <button class="btn-primary green" onclick="quickComplete('${q.id}',null);closeModal();">✅ Confirmer</button>
+    </div>`;
+}
+
+// ─── CUSTOM QUEST ─────────────────────────────────────────────────────────────
+function addCustomQuest(){
+  const name=document.getElementById('aq-name').value.trim();
+  const desc=document.getElementById('aq-desc').value.trim()||'Quête personnelle';
+  const xp=parseInt(document.getElementById('aq-xp').value)||30;
+  const goal=parseInt(document.getElementById('aq-goal').value)||1;
+  const proof=document.getElementById('aq-proof').value;
+  const color=document.getElementById('aq-color').value;
+  if(!name){showNotif('⚠️','Donne un nom à ta quête !');return;}
+  const id='u_'+Date.now();
+  S.userQuests.push({id,name,desc,xp,reward:'',color,progMax:goal,proof:proof==='none'?null:proof,proofLabel:name});
+  document.getElementById('aq-name').value='';
+  document.getElementById('aq-desc').value='';
+  document.getElementById('aq-xp').value='';
+  document.getElementById('aq-goal').value='';
+  save();renderQuests();
+  showNotif('📋 Quête créée !',`"${name}" ajoutée au registre`);
+}
+
+// ─── NAME EDIT ────────────────────────────────────────────────────────────────
+function openNameEdit(){
+  document.getElementById('name-edit-input').value=S.name;
+  document.getElementById('name-edit-wrap').classList.add('open');
+  setTimeout(()=>document.getElementById('name-edit-input').focus(),300);
+}
+function closeNameEdit(){document.getElementById('name-edit-wrap').classList.remove('open');}
+function saveName(){
+  const v=document.getElementById('name-edit-input').value.trim();
+  if(!v)return;
+  S.name=v;save();renderProfile();closeNameEdit();
+  showNotif('✅ Nom modifié',`Bienvenue, ${v} !`);
+}
+document.getElementById('name-edit-input').addEventListener('keydown',e=>{if(e.key==='Enter')saveName();});
+
+function setAvatar(emoji){S.avatar=emoji;save();renderProfile();showNotif('✅ Avatar modifié',emoji);}
+
+function updateRunDist(){
+  const v=parseFloat(document.getElementById('run-dist-input').value);
+  if(v>0&&v<=50){S.runDist=v;save();renderQuests();showNotif('⚙️ Distance mise à jour',`Objectif : ${v} km/jour`);}
+}
+
+// ─── SETTINGS ─────────────────────────────────────────────────────────────────
+function resetGame(){
+  if(!confirm('Réinitialiser toutes les données ? Cette action est irréversible !'))return;
+  localStorage.removeItem('solo_rising_v3');S=defaultState();save();renderAll();
+  showNotif('🔄 Reset effectué','Le voyage recommence.');
+}
+
+// ─── TAB SWITCH ───────────────────────────────────────────────────────────────
+function switchTab(tab){
+  document.querySelectorAll('.tab').forEach((t,i)=>{
+    const tabs=['quests','skills','achievements','settings'];
+    t.classList.toggle('active',tabs[i]===tab);
+  });
+  document.querySelectorAll('.tab-content').forEach(c=>{
+    c.classList.toggle('active',c.id==='tab-'+tab);
+  });
+  if(tab!=='quests'){stopCamera();stopGPS();}
+}
+
+// ─── NOTIFICATIONS ────────────────────────────────────────────────────────────
+function showNotif(title,body){
+  document.querySelectorAll('.notif').forEach(n=>n.remove());
+  const el=document.createElement('div');el.className='notif';
+  el.innerHTML=`<div class="notif-title">${title}</div><div class="notif-body">${body}</div>`;
+  document.body.appendChild(el);
+  setTimeout(()=>{if(el.parentNode)el.remove();},2900);
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+load();renderAll();
+</script>
+</body>
+</html>
