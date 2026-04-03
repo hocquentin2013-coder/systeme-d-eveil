@@ -888,6 +888,9 @@ function closeModal(){
 // CAMERA UI — vidéo frontale
 function buildCameraUI(body,q){
   body.innerHTML=`
+    <div style="background:rgba(74,122,255,.1);border:1px solid rgba(74,122,255,.3);border-radius:8px;padding:8px 12px;margin-bottom:10px;font-size:11px;color:var(--blue2);display:flex;align-items:center;gap:6px;">
+      <span>🤖</span><span>L'IA Claude va vérifier que tu fais bien l'exercice !</span>
+    </div>
     <div class="vid-area">
       <video id="video-feed" autoplay playsinline muted></video>
       <div class="cam-overlay"><div class="cam-status" id="cam-status">Chargement caméra...</div></div>
@@ -898,13 +901,28 @@ function buildCameraUI(body,q){
       <div style="font-size:11px;color:var(--text2);margin-left:auto;">Enregistrement en cours</div>
     </div>
     <video id="vid-saved-preview" class="vid-saved-preview" controls></video>
-    <div class="proof-actions">
-      <button class="btn-secondary" id="cam-retake-btn" style="display:none" onclick="retakeVideo()">🔄 Reprendre</button>
-      <button class="btn-primary" id="cam-snap-btn" onclick="startVideoRec()">🔴 Démarrer vidéo</button>
-      <button class="btn-primary" id="cam-stop-btn" style="display:none;background:var(--red)" onclick="stopVideoRec()">⏹ Stopper</button>
-      <button class="btn-primary green" id="cam-validate-btn" style="display:none" onclick="validateCameraProof()">✅ Valider</button>
+    <img id="photo-ai-preview" style="width:100%;border-radius:10px;margin-bottom:10px;display:none;" />
+    <div class="proof-actions" style="flex-wrap:wrap;gap:6px;">
+      <button class="btn-primary" id="cam-photo-btn" onclick="takePhotoForAI()" style="background:linear-gradient(135deg,var(--purple),var(--purple2));flex:1;">📸 Photo IA</button>
+      <button class="btn-primary" id="cam-snap-btn" onclick="startVideoRec()" style="flex:1;">🔴 Vidéo</button>
+      <button class="btn-primary" id="cam-stop-btn" style="display:none;background:var(--red);flex:1;" onclick="stopVideoRec()">⏹ Stop</button>
+      <button class="btn-secondary" id="cam-retake-btn" style="display:none;flex:1;" onclick="retakeVideo()">🔄 Reprendre</button>
+      <button class="btn-primary green" id="cam-validate-btn" style="display:none;flex:1;" onclick="validateCameraProof()">✅ Valider</button>
     </div>`;
   startCamera();
+}
+
+function takePhotoForAI(){
+  const photo=capturePhotoForAI();
+  if(!photo){showNotif('⚠️','Caméra non disponible');return;}
+  photoCaptured=photo;
+  const preview=document.getElementById('photo-ai-preview');
+  if(preview){preview.src=photo;preview.style.display='block';}
+  document.getElementById('cam-validate-btn').style.display='flex';
+  document.getElementById('cam-retake-btn').style.display='flex';
+  document.getElementById('cam-photo-btn').style.display='none';
+  document.getElementById('cam-snap-btn').style.display='none';
+  showNotif('📸 Photo prise','Clique Valider pour l\'analyse IA !');
 }
 
 let mediaRecorder=null;let recordedChunks=[];let recTimerInterval=null;let recSeconds=0;
@@ -974,7 +992,10 @@ function retakeVideo(){
   photoCaptured=null;
   const preview=document.getElementById('vid-saved-preview');
   if(preview){preview.style.display='none';preview.src='';}
+  const photoPreview=document.getElementById('photo-ai-preview');
+  if(photoPreview){photoPreview.style.display='none';photoPreview.src='';}
   document.getElementById('cam-snap-btn').style.display='flex';
+  document.getElementById('cam-photo-btn').style.display='flex';
   document.getElementById('cam-retake-btn').style.display='none';
   document.getElementById('cam-validate-btn').style.display='none';
   startCamera();
@@ -986,13 +1007,71 @@ function stopCamera(){
   if(cameraStream){cameraStream.getTracks().forEach(t=>t.stop());cameraStream=null;}
 }
 
-function validateCameraProof(){
+async function validateCameraProof(){
   const allQ=[...getDailyQuests(S.level,S.runDist),...S.userQuests,...DEFAULT_SPECIAL_QUESTS];
   const q=allQ.find(x=>x.id===currentProofQuestId);
-  if(q){
-    if(photoCaptured) S.questProofs[q.id]=photoCaptured;
+  if(!q) return;
+
+  // Si pas de photo/vidéo capturée → valider directement
+  if(!photoCaptured){stopCamera();closeModal();completeQuest(q);return;}
+
+  // Pour les photos (base64), essayer la vérification IA
+  if(photoCaptured.startsWith('data:image')){
+    const validateBtn=document.getElementById('cam-validate-btn');
+    if(validateBtn){validateBtn.textContent='🤖 IA en cours...';validateBtn.disabled=true;}
+    try{
+      const base64Data=photoCaptured.split(',')[1];
+      const mediaType=photoCaptured.split(';')[0].split(':')[1]||'image/jpeg';
+      const questName=q.name||'exercice';
+      const response=await fetch('https://api.anthropic.com/v1/messages',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({
+          model:'claude-sonnet-4-20250514',
+          max_tokens:300,
+          messages:[{role:'user',content:[
+            {type:'image',source:{type:'base64',media_type:mediaType,data:base64Data}},
+            {type:'text',text:`Tu es un coach sportif IA. Analyse cette image et dis si elle montre une personne en train de faire ou ayant fait "${questName}". 
+Réponds UNIQUEMENT en JSON: {"valid":true/false,"message":"message court en français max 10 mots","confidence":"haute/moyenne/basse"}
+Si tu n'es pas sûr, mets valid:true. Si c'est clairement autre chose (paysage, nourriture, rien de sportif), mets valid:false.`}
+          ]}]
+        })
+      });
+      const data=await response.json();
+      const text=data.content?.[0]?.text||'{}';
+      const clean=text.replace(/```json|```/g,'').trim();
+      let result={valid:true,message:'Bravo, continue !',confidence:'moyenne'};
+      try{result=JSON.parse(clean);}catch(e){}
+
+      if(result.valid===false&&result.confidence==='haute'){
+        showNotif('🤖 IA Refus',result.message||'Preuve non reconnue');
+        if(validateBtn){validateBtn.textContent='✅ Valider';validateBtn.disabled=false;}
+        return;
+      }
+      // IA approuve (ou pas sûre → on valide quand même)
+      showNotif('🤖 IA Validée !',result.message||'Exercice confirmé !');
+      S.questProofs[q.id]=photoCaptured;
+      stopCamera();closeModal();completeQuest(q);
+    }catch(err){
+      // En cas d'erreur API → valider quand même
+      S.questProofs[q.id]=photoCaptured;
+      stopCamera();closeModal();completeQuest(q);
+    }
+  } else {
+    // Vidéo → valider directement (pas d'analyse IA pour les vidéos)
+    S.questProofs[q.id]=photoCaptured;
     stopCamera();closeModal();completeQuest(q);
   }
+}
+
+// Capture photo (en plus de la vidéo) pour l'analyse IA
+function capturePhotoForAI(){
+  const video=document.getElementById('video-feed');
+  if(!video||!video.srcObject) return null;
+  const canvas=document.createElement('canvas');
+  canvas.width=video.videoWidth||640;canvas.height=video.videoHeight||480;
+  canvas.getContext('2d').drawImage(video,0,0);
+  return canvas.toDataURL('image/jpeg',0.8);
 }
 
 // GPS / RUNNING UI
@@ -1051,10 +1130,21 @@ function initMap(){
         .addTo(leafletMap).bindPopup('📍 Ta position').openPopup();
       showNotif('📍 Position trouvée',`Lat: ${lat.toFixed(4)}, Lng: ${lng.toFixed(4)}`);
     },()=>{
-      leafletMap.setView([48.8566,2.3522],13);
-      showNotif('⚠️ GPS','Autorise la localisation pour te trouver');
+      // fallback: essaie de récupérer la position via l'IP
+      fetch('https://ipapi.co/json/').then(r=>r.json()).then(d=>{
+        if(d.latitude&&d.longitude){
+          leafletMap.setView([d.latitude,d.longitude],13);
+          showNotif('📍 Position approximative',`${d.city||'Zone détectée'}`);
+        } else {
+          leafletMap.setView([49.45,1.09],13); // Rouen/Normandie par défaut
+          showNotif('⚠️ GPS','Autorise la localisation pour ta position exacte');
+        }
+      }).catch(()=>{
+        leafletMap.setView([49.45,1.09],13);
+        showNotif('⚠️ GPS','Autorise la localisation pour te trouver');
+      });
     },{enableHighAccuracy:true,timeout:8000});
-  } else leafletMap.setView([48.8566,2.3522],13);
+  } else leafletMap.setView([49.45,1.09],13);
 }
 
 function startGPS(){
