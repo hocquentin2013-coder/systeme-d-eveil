@@ -245,15 +245,103 @@ body{background:var(--bg);color:var(--text);font-family:'Rajdhani',sans-serif;mi
   .stats-grid{grid-template-columns:repeat(3,1fr);}
   .stat-val{font-size:16px;}
 }
+
+/* ── ACCOUNT SCREEN ── */
+.account-screen{position:fixed;inset:0;z-index:1000;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;}
+.account-screen.hidden{display:none;}
+.account-logo{font-family:'Cinzel',serif;font-size:34px;font-weight:900;background:linear-gradient(135deg,var(--gold),var(--gold2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 18px rgba(200,169,74,.5));letter-spacing:3px;margin-bottom:6px;}
+.account-tag{font-size:11px;letter-spacing:4px;color:var(--blue);margin-bottom:40px;font-family:'Rajdhani',sans-serif;}
+.account-box{width:100%;max-width:340px;background:var(--panel);border:1px solid var(--border2);border-radius:16px;padding:28px 24px;box-shadow:0 0 40px rgba(74,122,255,.1);}
+.account-tabs{display:flex;gap:4px;background:var(--bg2);border-radius:8px;padding:4px;margin-bottom:24px;}
+.account-tab{flex:1;text-align:center;padding:8px;border-radius:6px;font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;color:var(--text2);transition:.2s;}
+.account-tab.active{background:var(--panel2);color:var(--gold);}
+.account-field{margin-bottom:14px;}
+.account-label{font-size:11px;letter-spacing:2px;color:var(--text2);text-transform:uppercase;margin-bottom:6px;display:block;}
+.account-input{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:12px 14px;color:var(--text);font-family:'Rajdhani',sans-serif;font-size:15px;outline:none;transition:.2s;}
+.account-input:focus{border-color:var(--gold);}
+.account-input::placeholder{color:var(--text3);}
+.account-btn{width:100%;background:linear-gradient(135deg,var(--blue),var(--blue2));border:none;border-radius:8px;color:#fff;font-family:'Cinzel',serif;font-size:14px;font-weight:700;padding:14px;cursor:pointer;letter-spacing:2px;transition:.2s;margin-top:4px;}
+.account-btn:hover{filter:brightness(1.15);}
+.account-btn.gold{background:linear-gradient(135deg,#a08020,var(--gold));}
+.account-error{font-size:12px;color:var(--red);margin-top:10px;text-align:center;min-height:16px;}
+.account-players{margin-top:16px;border-top:1px solid var(--border);padding-top:16px;}
+.account-players-title{font-size:10px;letter-spacing:2px;color:var(--text3);text-transform:uppercase;margin-bottom:8px;}
+.account-player-item{display:flex;align-items:center;gap:10px;padding:8px 10px;background:var(--bg3);border-radius:7px;cursor:pointer;transition:.2s;margin-bottom:6px;border:1px solid transparent;}
+.account-player-item:hover{border-color:var(--border2);}
+.account-player-emoji{font-size:20px;}
+.account-player-info{flex:1;}
+.account-player-name{font-size:13px;font-weight:700;color:var(--text);}
+.account-player-sub{font-size:10px;color:var(--text2);}
+.account-player-del{font-size:14px;color:var(--text3);padding:4px 6px;border-radius:4px;}
+.account-player-del:hover{color:var(--red);}
+.logout-btn{position:absolute;top:14px;right:16px;background:transparent;border:1px solid var(--border);border-radius:6px;color:var(--text3);font-size:11px;font-family:'Rajdhani',sans-serif;font-weight:700;padding:5px 10px;cursor:pointer;letter-spacing:1px;z-index:10;}
+.logout-btn:hover{border-color:var(--red2);color:var(--red);}
+
+/* ── VIDEO PROOF ── */
+.vid-area{border-radius:10px;overflow:hidden;background:#000;position:relative;margin-bottom:14px;aspect-ratio:4/3;}
+#video-feed{width:100%;height:100%;object-fit:cover;display:block;transform:scaleX(-1);}
+.vid-controls{display:flex;gap:8px;margin-bottom:10px;align-items:center;}
+.vid-rec-dot{width:9px;height:9px;background:var(--red);border-radius:50%;animation:pulse 1s ease-in-out infinite;flex-shrink:0;}
+.vid-timer{font-family:'Cinzel',serif;font-size:15px;color:var(--red);font-weight:700;}
+.vid-saved-preview{width:100%;border-radius:10px;margin-bottom:10px;display:none;}
 </style>
 </head>
 <body>
-<div class="app">
+
+<!-- ── ACCOUNT SCREEN ── -->
+<div class="account-screen" id="account-screen">
+  <div class="account-logo">Solo Rising</div>
+  <div class="account-tag">★ Système d'éveil ★</div>
+  <div class="account-box">
+    <div class="account-tabs">
+      <div class="account-tab active" id="atab-login" onclick="switchAccountTab('login')">Connexion</div>
+      <div class="account-tab" id="atab-register" onclick="switchAccountTab('register')">Créer</div>
+    </div>
+    <!-- LOGIN -->
+    <div id="account-login-form">
+      <div class="account-field">
+        <label class="account-label">Nom d'utilisateur</label>
+        <input class="account-input" id="login-username" placeholder="Ton pseudo..." maxlength="20" />
+      </div>
+      <div class="account-field">
+        <label class="account-label">Mot de passe</label>
+        <input class="account-input" id="login-password" type="password" placeholder="••••••" />
+      </div>
+      <button class="account-btn gold" onclick="loginAccount()">SE CONNECTER</button>
+      <div class="account-error" id="login-error"></div>
+    </div>
+    <!-- REGISTER -->
+    <div id="account-register-form" style="display:none">
+      <div class="account-field">
+        <label class="account-label">Nom du chasseur</label>
+        <input class="account-input" id="reg-username" placeholder="Ton pseudo..." maxlength="20" />
+      </div>
+      <div class="account-field">
+        <label class="account-label">Mot de passe</label>
+        <input class="account-input" id="reg-password" type="password" placeholder="Min. 4 caractères" />
+      </div>
+      <div class="account-field">
+        <label class="account-label">Confirmer</label>
+        <input class="account-input" id="reg-confirm" type="password" placeholder="Répète le mot de passe" />
+      </div>
+      <button class="account-btn" onclick="registerAccount()">CRÉER LE COMPTE</button>
+      <div class="account-error" id="reg-error"></div>
+    </div>
+    <!-- EXISTING PLAYERS -->
+    <div class="account-players" id="existing-players" style="display:none">
+      <div class="account-players-title">Comptes enregistrés</div>
+      <div id="players-list"></div>
+    </div>
+  </div>
+</div>
+
+<div class="app" style="display:none" id="main-app">
   <!-- HEADER -->
   <div class="header">
     <div class="system-tag">★ Système d'éveil activé ★</div>
     <div class="app-title">Solo Rising</div>
     <div class="divider"></div>
+    <button class="logout-btn" onclick="logoutAccount()">⇦ Déconnexion</button>
   </div>
 
   <!-- PROFILE -->
@@ -544,8 +632,17 @@ function load(){
   checkReset();
 }
 
+function persistUserState(){
+  if(!currentUser)return;
+  const accounts=getAccounts();
+  if(!accounts[currentUser])return;
+  accounts[currentUser].state=S;
+  saveAccounts(accounts);
+}
+
 function save(){
   try{localStorage.setItem('solo_rising_v3',JSON.stringify(S));}catch(e){}
+  persistUserState();
 }
 
 function checkReset(){
@@ -788,67 +885,105 @@ function closeModal(){
   photoCaptured=null;
 }
 
-// CAMERA UI
+// CAMERA UI — vidéo frontale
 function buildCameraUI(body,q){
   body.innerHTML=`
-    <div class="cam-area">
-      <video id="camera-feed" autoplay playsinline></video>
-      <canvas id="cam-canvas"></canvas>
+    <div class="vid-area">
+      <video id="video-feed" autoplay playsinline muted></video>
       <div class="cam-overlay"><div class="cam-status" id="cam-status">Chargement caméra...</div></div>
     </div>
-    <img id="photo-preview" class="photo-preview" />
+    <div class="vid-controls" id="vid-controls" style="display:none">
+      <div class="vid-rec-dot"></div>
+      <div class="vid-timer" id="vid-timer">0:00</div>
+      <div style="font-size:11px;color:var(--text2);margin-left:auto;">Enregistrement en cours</div>
+    </div>
+    <video id="vid-saved-preview" class="vid-saved-preview" controls></video>
     <div class="proof-actions">
-      <button class="btn-secondary" id="cam-retake-btn" style="display:none" onclick="retakePhoto()">🔄 Reprendre</button>
-      <button class="btn-primary" id="cam-snap-btn" onclick="snapPhoto()">📸 Prendre la photo</button>
+      <button class="btn-secondary" id="cam-retake-btn" style="display:none" onclick="retakeVideo()">🔄 Reprendre</button>
+      <button class="btn-primary" id="cam-snap-btn" onclick="startVideoRec()">🔴 Démarrer vidéo</button>
+      <button class="btn-primary" id="cam-stop-btn" style="display:none;background:var(--red)" onclick="stopVideoRec()">⏹ Stopper</button>
       <button class="btn-primary green" id="cam-validate-btn" style="display:none" onclick="validateCameraProof()">✅ Valider</button>
     </div>`;
   startCamera();
 }
 
+let mediaRecorder=null;let recordedChunks=[];let recTimerInterval=null;let recSeconds=0;
+
 async function startCamera(){
   try{
-    cameraStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'},audio:false});
-    const v=document.getElementById('camera-feed');
-    if(v){v.srcObject=cameraStream;document.getElementById('cam-status').textContent='Caméra active ✓';}
+    cameraStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user',width:{ideal:1280},height:{ideal:720}},audio:false});
+    const v=document.getElementById('video-feed');
+    if(v){v.srcObject=cameraStream;document.getElementById('cam-status').textContent='Caméra avant active ✓';}
   }catch(err){
-    const st=document.getElementById('cam-status');
-    if(st)st.textContent='⚠️ Caméra non disponible';
-    const snap=document.getElementById('cam-snap-btn');
-    if(snap)snap.textContent='✅ Valider sans photo';
+    // fallback: try any camera
+    try{
+      cameraStream=await navigator.mediaDevices.getUserMedia({video:true,audio:false});
+      const v=document.getElementById('video-feed');
+      if(v){v.srcObject=cameraStream;document.getElementById('cam-status').textContent='Caméra active ✓';}
+    }catch(e){
+      const st=document.getElementById('cam-status');
+      if(st)st.textContent='⚠️ Caméra non disponible';
+      const snap=document.getElementById('cam-snap-btn');
+      if(snap)snap.textContent='✅ Valider sans vidéo';
+    }
   }
 }
 
-function stopCamera(){
-  if(cameraStream){cameraStream.getTracks().forEach(t=>t.stop());cameraStream=null;}
-}
-
-function snapPhoto(){
-  const video=document.getElementById('camera-feed');
-  const canvas=document.getElementById('cam-canvas');
-  const preview=document.getElementById('photo-preview');
-  if(!video||!video.srcObject){
-    // no camera — still validate
-    validateCameraProof();return;
+function startVideoRec(){
+  const video=document.getElementById('video-feed');
+  if(!video||!video.srcObject){validateCameraProof();return;}
+  recordedChunks=[];
+  const mimeType=MediaRecorder.isTypeSupported('video/webm;codecs=vp9')?'video/webm;codecs=vp9':'video/webm';
+  try{
+    mediaRecorder=new MediaRecorder(cameraStream,{mimeType});
+  }catch(e){
+    mediaRecorder=new MediaRecorder(cameraStream);
   }
-  canvas.width=video.videoWidth||320;
-  canvas.height=video.videoHeight||240;
-  canvas.getContext('2d').drawImage(video,0,0);
-  const dataURL=canvas.toDataURL('image/jpeg',.8);
-  photoCaptured=dataURL;
-  preview.src=dataURL;preview.style.display='block';
+  mediaRecorder.ondataavailable=e=>{if(e.data.size>0)recordedChunks.push(e.data);};
+  mediaRecorder.onstop=()=>{
+    const blob=new Blob(recordedChunks,{type:'video/webm'});
+    const url=URL.createObjectURL(blob);
+    const preview=document.getElementById('vid-saved-preview');
+    if(preview){preview.src=url;preview.style.display='block';}
+    photoCaptured=url;
+    document.getElementById('cam-validate-btn').style.display='flex';
+    document.getElementById('cam-retake-btn').style.display='flex';
+    document.getElementById('vid-controls').style.display='none';
+  };
+  mediaRecorder.start(100);
+  recSeconds=0;
   document.getElementById('cam-snap-btn').style.display='none';
-  document.getElementById('cam-retake-btn').style.display='flex';
-  document.getElementById('cam-validate-btn').style.display='flex';
-  stopCamera();
+  document.getElementById('cam-stop-btn').style.display='flex';
+  document.getElementById('vid-controls').style.display='flex';
+  recTimerInterval=setInterval(()=>{
+    recSeconds++;
+    const m=Math.floor(recSeconds/60);const s=recSeconds%60;
+    const el=document.getElementById('vid-timer');
+    if(el)el.textContent=`${m}:${s.toString().padStart(2,'0')}`;
+  },1000);
 }
 
-function retakePhoto(){
+function stopVideoRec(){
+  if(recTimerInterval){clearInterval(recTimerInterval);recTimerInterval=null;}
+  if(mediaRecorder&&mediaRecorder.state!=='inactive')mediaRecorder.stop();
+  document.getElementById('cam-stop-btn').style.display='none';
+  // stopCamera called inside onstop after blob is ready — DON'T call here
+}
+
+function retakeVideo(){
   photoCaptured=null;
-  document.getElementById('photo-preview').style.display='none';
+  const preview=document.getElementById('vid-saved-preview');
+  if(preview){preview.style.display='none';preview.src='';}
   document.getElementById('cam-snap-btn').style.display='flex';
   document.getElementById('cam-retake-btn').style.display='none';
   document.getElementById('cam-validate-btn').style.display='none';
   startCamera();
+}
+
+function stopCamera(){
+  if(recTimerInterval){clearInterval(recTimerInterval);recTimerInterval=null;}
+  if(mediaRecorder&&mediaRecorder.state!=='inactive'){try{mediaRecorder.stop();}catch(e){}}
+  if(cameraStream){cameraStream.getTracks().forEach(t=>t.stop());cameraStream=null;}
 }
 
 function validateCameraProof(){
@@ -906,10 +1041,19 @@ function initMap(){
   if(!mapDiv||leafletMap)return;
   leafletMap=L.map('leaflet-map',{zoomControl:false});
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:18}).addTo(leafletMap);
+  // Auto-localisation immédiate
   if(navigator.geolocation){
+    const mapPlaceholder=document.getElementById('map-container');
     navigator.geolocation.getCurrentPosition(p=>{
-      leafletMap.setView([p.coords.latitude,p.coords.longitude],15);
-    },()=>leafletMap.setView([48.8566,2.3522],13));
+      const lat=p.coords.latitude,lng=p.coords.longitude;
+      leafletMap.setView([lat,lng],16);
+      L.circleMarker([lat,lng],{color:'#4aff8a',radius:10,fillOpacity:.8,fillColor:'#4aff8a'})
+        .addTo(leafletMap).bindPopup('📍 Ta position').openPopup();
+      showNotif('📍 Position trouvée',`Lat: ${lat.toFixed(4)}, Lng: ${lng.toFixed(4)}`);
+    },()=>{
+      leafletMap.setView([48.8566,2.3522],13);
+      showNotif('⚠️ GPS','Autorise la localisation pour te trouver');
+    },{enableHighAccuracy:true,timeout:8000});
   } else leafletMap.setView([48.8566,2.3522],13);
 }
 
@@ -1154,8 +1298,162 @@ function showNotif(title,body){
   setTimeout(()=>{if(el.parentNode)el.remove();},2900);
 }
 
+// ─── ACCOUNT SYSTEM ──────────────────────────────────────────────────────────
+const ACCOUNTS_KEY='solo_rising_accounts_v1';
+const SESSION_KEY='solo_rising_session_v1';
+let currentUser=null;
+
+function getAccounts(){
+  try{return JSON.parse(localStorage.getItem(ACCOUNTS_KEY)||'{}');}catch(e){return {};}
+}
+function saveAccounts(accounts){
+  try{localStorage.setItem(ACCOUNTS_KEY,JSON.stringify(accounts));}catch(e){}
+}
+function getSession(){
+  try{return localStorage.getItem(SESSION_KEY)||null;}catch(e){return null;}
+}
+function setSession(username){
+  try{localStorage.setItem(SESSION_KEY,username);}catch(e){}
+}
+function clearSession(){
+  try{localStorage.removeItem(SESSION_KEY);}catch(e){}
+}
+
+function switchAccountTab(tab){
+  document.getElementById('atab-login').classList.toggle('active',tab==='login');
+  document.getElementById('atab-register').classList.toggle('active',tab==='register');
+  document.getElementById('account-login-form').style.display=tab==='login'?'block':'none';
+  document.getElementById('account-register-form').style.display=tab==='register'?'block':'none';
+}
+
+function renderExistingPlayers(){
+  const accounts=getAccounts();
+  const keys=Object.keys(accounts);
+  const wrap=document.getElementById('existing-players');
+  const list=document.getElementById('players-list');
+  if(keys.length===0){wrap.style.display='none';return;}
+  wrap.style.display='block';
+  list.innerHTML='';
+  keys.forEach(username=>{
+    const acc=accounts[username];
+    const st=acc.state;
+    const item=document.createElement('div');
+    item.className='account-player-item';
+    item.innerHTML=`
+      <div class="account-player-emoji">${st&&st.avatar?st.avatar:'⚔️'}</div>
+      <div class="account-player-info" onclick="quickLogin('${username}')">
+        <div class="account-player-name">${username}</div>
+        <div class="account-player-sub">Niveau ${st&&st.level?st.level:1} • ${st&&st.totalCompleted?st.totalCompleted:0} quêtes</div>
+      </div>
+      <div class="account-player-del" onclick="deleteAccount('${username}',event)">🗑️</div>`;
+    list.appendChild(item);
+  });
+}
+
+function quickLogin(username){
+  document.getElementById('login-username').value=username;
+  document.getElementById('login-password').focus();
+  switchAccountTab('login');
+}
+
+function deleteAccount(username,e){
+  e.stopPropagation();
+  if(!confirm(`Supprimer le compte "${username}" ? Cette action est irréversible.`))return;
+  const accounts=getAccounts();
+  delete accounts[username];
+  saveAccounts(accounts);
+  renderExistingPlayers();
+  showNotif('🗑️ Compte supprimé',username);
+}
+
+function loginAccount(){
+  const username=document.getElementById('login-username').value.trim();
+  const password=document.getElementById('login-password').value;
+  const errEl=document.getElementById('login-error');
+  errEl.textContent='';
+  if(!username||!password){errEl.textContent='Remplis tous les champs.';return;}
+  const accounts=getAccounts();
+  if(!accounts[username]){errEl.textContent='Compte introuvable.';return;}
+  // simple hash check
+  if(accounts[username].pwdHash!==simpleHash(password)){errEl.textContent='Mot de passe incorrect.';return;}
+  setSession(username);
+  enterApp(username,accounts[username].state);
+}
+
+function registerAccount(){
+  const username=document.getElementById('reg-username').value.trim();
+  const password=document.getElementById('reg-password').value;
+  const confirm=document.getElementById('reg-confirm').value;
+  const errEl=document.getElementById('reg-error');
+  errEl.textContent='';
+  if(!username||!password){errEl.textContent='Remplis tous les champs.';return;}
+  if(username.length<2){errEl.textContent='Pseudo trop court (min. 2 caractères).';return;}
+  if(password.length<4){errEl.textContent='Mot de passe trop court (min. 4 caractères).';return;}
+  if(password!==confirm){errEl.textContent='Les mots de passe ne correspondent pas.';return;}
+  const accounts=getAccounts();
+  if(accounts[username]){errEl.textContent='Ce pseudo est déjà pris.';return;}
+  const newState=defaultState();
+  newState.name=username;
+  accounts[username]={pwdHash:simpleHash(password),state:newState};
+  saveAccounts(accounts);
+  setSession(username);
+  enterApp(username,newState);
+}
+
+function simpleHash(str){
+  let hash=5381;
+  for(let i=0;i<str.length;i++){hash=((hash<<5)+hash)+str.charCodeAt(i);}
+  return (hash>>>0).toString(16);
+}
+
+function enterApp(username,savedState){
+  currentUser=username;
+  S=Object.assign(defaultState(),savedState||{});
+  checkReset();
+  document.getElementById('account-screen').classList.add('hidden');
+  document.getElementById('main-app').style.display='block';
+  renderAll();
+  showNotif(`⚔️ Bienvenue ${username} !`,`Niveau ${S.level} — Rang ${getRank(S.level)[1]}`);
+}
+
+function logoutAccount(){
+  if(!confirm('Se déconnecter ?'))return;
+  // Save before logout
+  if(currentUser) persistUserState();
+  clearSession();
+  currentUser=null;
+  document.getElementById('main-app').style.display='none';
+  document.getElementById('account-screen').classList.remove('hidden');
+  renderExistingPlayers();
+  // reset login fields
+  document.getElementById('login-username').value='';
+  document.getElementById('login-password').value='';
+  document.getElementById('login-error').textContent='';
+}
+
+function persistUserState(){
+  if(!currentUser)return;
+  const accounts=getAccounts();
+  if(!accounts[currentUser])return;
+  accounts[currentUser].state=S;
+  saveAccounts(accounts);
+}
+
 // ─── INIT ─────────────────────────────────────────────────────────────────────
-load();renderAll();
+// Check if session exists
+(function init(){
+  renderExistingPlayers();
+  const session=getSession();
+  if(session){
+    const accounts=getAccounts();
+    if(accounts[session]){
+      enterApp(session,accounts[session].state);
+      return;
+    }
+  }
+  // Show account screen
+  document.getElementById('account-screen').classList.remove('hidden');
+})();
 </script>
 </body>
 </html>
